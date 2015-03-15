@@ -2,5 +2,6 @@
 \#*\#
 *.o
 tsndplay
+tsndplay2
 *.tsnd
 *.bin
