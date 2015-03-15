@@ -1,0 +1,6 @@
+*~
+\#*\#
+*.o
+tsndplay
+tsnddata.c
+tsnd.wav
