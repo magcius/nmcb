@@ -1,0 +1,15 @@
+NMCB - A tiny audio player for the embedded in you
+==================================================
+
+NMCB is a tiny audio player library that talks directly to ALSA. It's
+designed for super-embedded environments like early-boot where you do
+not have daemons like PulseAudio available.
+
+NMCB does also not use alsa-lib, which is far too complex and heavy
+for such an embedded environment, and it doesn't use any of the
+slimmer alsa libraries either, like salsa-lib, which are still fairly
+complex. It instead talks to the kernel directly using the ASOUND
+ioctls.
+
+The example program, "tsndplay", plays a sound directly embedded in
+its binary.
