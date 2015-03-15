@@ -3,10 +3,14 @@ CFLAGS = -g -O0 -Wall -Werror
 
 all: tsndplay
 
-tsndplay: nmcb.o tsndplay.o tsnddata.o
-
-tsnddata.c: tsnd.wav
+%.tsnd: %.wav
 	python mktsnd.py $^ $@
 
+%.tsnd.bin: %.tsnd
+	ld -r -o $@ -z noexecstack --format=binary $^
+	objcopy --rename-section .data=.rodata,alloc,load,data,contents $@
+
+tsndplay: nmcb.o tsndplay.o tsndplay.tsnd.bin
+
 clean:
-	rm -f *.o tsnddata.c
+	rm -f *.o *.tsnd *.bin tsndplay

@@ -30,31 +30,35 @@
 #include "nmcb.h"
 #include "tsnd.h"
 
-/* This is provded by tsnddata.o */
-extern struct tsnd _tsnd;
+/* These are provided by linker magic. */
+extern const char _binary_tsndplay_tsnd_start[];
 
 int main (int argc, char *argv[]) {
     int ret = EXIT_FAILURE;
     int fd;
     int frames;
+    struct tsnd *_tsnd = (struct tsnd *) _binary_tsndplay_tsnd_start;
+
+    if (!tsnd_is_valid (_tsnd))
+        goto out;
 
     fd = nmcb_open ();
     if (fd < 0)
         goto out;
 
     if (nmcb_set_params (fd,
-                         _tsnd.format,
+                         tsnd_pcm_format(_tsnd),
                          SNDRV_PCM_ACCESS_RW_INTERLEAVED,
-                         _tsnd.channels,
-                         _tsnd.rate,
+                         _tsnd->channels,
+                         _tsnd->rate,
                          500000) < 0)
         goto out;
 
     if (nmcb_prepare (fd) < 0)
         goto out;
 
-    frames = nmcb_write_data (fd, &_tsnd.data, _tsnd.nframes);
-    if (frames != _tsnd.nframes) {
+    frames = nmcb_write_data (fd, _tsnd->data, _tsnd->nframes);
+    if (frames != _tsnd->nframes) {
         fprintf (stderr, "not all frames written\n");
         goto out;
     }

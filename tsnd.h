@@ -26,12 +26,35 @@
 #pragma once
 
 #include "asnd.h"
+#include <string.h>
+#include <stdbool.h>
+
+#define TSND_MAGIC "TSND0000"
+
+#pragma pack(push,1)
 
 struct tsnd {
-    snd_pcm_format_t format;
-    int channels;
-    int rate;
-    int nframes;
-    int framesize;
+    char magic[8];
+    uint8_t sample_width;
+    uint8_t channels;
+    uint16_t rate;
+    uint16_t framesize;
+    uint32_t nframes;
     uint8_t data[];
 };
+
+#pragma pack(pop)
+
+static inline bool tsnd_is_valid(struct tsnd *tsnd) {
+    return (strncmp (tsnd->magic, TSND_MAGIC, 8) == 0);
+}
+
+static inline snd_pcm_format_t tsnd_pcm_format(struct tsnd *tsnd) {
+    switch (tsnd->sample_width) {
+    case 1:
+        return SNDRV_PCM_FORMAT_U8;
+    default:
+    case 2:
+        return SNDRV_PCM_FORMAT_S16_LE;
+    }
+}
